@@ -78,6 +78,76 @@ document.addEventListener('keydown', function(e) {
 document.getElementById('impModal').addEventListener('click', function(e) {
   if (e.target === this) closeImp();
 });
+
+// ── COOKIE CONSENT ────────────────────────────────
+(function() {
+  var consent = localStorage.getItem('gb_cookie_consent');
+  if (!consent) {
+    document.getElementById('cookie-banner').classList.add('show');
+  } else {
+    document.getElementById('cookie-revoke').classList.add('show');
+    var data = JSON.parse(consent);
+    if (data.analytics) loadAnalytics();
+  }
+})();
+
+function cookieAcceptAll() {
+  saveConsent({necessary: true, analytics: true});
+  hideBanner();
+  loadAnalytics();
+}
+
+function cookieNecessary() {
+  saveConsent({necessary: true, analytics: false});
+  hideBanner();
+}
+
+function cookieSaveSettings() {
+  var analytics = document.getElementById('toggle-analytics').checked;
+  saveConsent({necessary: true, analytics: analytics});
+  hideBanner();
+  document.getElementById('cookie-settings').classList.remove('show');
+  if (analytics) loadAnalytics();
+}
+
+function cookieShowSettings() {
+  var consent = localStorage.getItem('gb_cookie_consent');
+  if (consent) {
+    var data = JSON.parse(consent);
+    document.getElementById('toggle-analytics').checked = data.analytics;
+  }
+  document.getElementById('cookie-settings').classList.add('show');
+}
+
+function cookieRevoke() {
+  document.getElementById('cookie-settings').classList.add('show');
+}
+
+function hideBanner() {
+  document.getElementById('cookie-banner').classList.remove('show');
+  document.getElementById('cookie-revoke').classList.add('show');
+}
+
+function saveConsent(data) {
+  data.date = new Date().toISOString();
+  localStorage.setItem('gb_cookie_consent', JSON.stringify(data));
+}
+
+function loadAnalytics() {
+  // Google Analytics einsetzen sobald Tracking-ID vorhanden
+  // var s = document.createElement('script');
+  // s.src = 'https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX';
+  // s.async = true; document.head.appendChild(s);
+  // window.dataLayer = window.dataLayer || [];
+  // function gtag(){dataLayer.push(arguments);}
+  // gtag('js', new Date()); gtag('config', 'G-XXXXXXXXXX');
+  console.log('Analytics geladen');
+}
+
+document.getElementById('cookie-settings').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('show');
+});
+
 </script>
 
 <!-- ═══ SEO: FAQ Schema ═══ -->
@@ -519,6 +589,86 @@ footer { background: var(--gd); color: rgba(255,255,255,.55); padding: 40px 8vw;
 .imp-box h3 { font-family: 'Libre Baskerville', serif; font-size: .95rem; color: #1e3d0f; margin: 1.25rem 0 .4rem; border-bottom: 1px solid #e4edd9; padding-bottom: .3rem; }
 .imp-box p, .imp-box address { font-size: .875rem; line-height: 1.7; color: #3a4f2a; font-style: normal; }
 .imp-box a { color: #2e6b18; }
+
+/* ── COOKIE BANNER ───────────────────────────────── */
+#cookie-banner {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+  background: #fff;
+  border-top: 3px solid var(--gm);
+  box-shadow: 0 -4px 24px rgba(0,0,0,.12);
+  padding: 1.25rem 5vw;
+  display: none;
+  font-family: 'DM Sans', sans-serif;
+}
+#cookie-banner.show { display: block; }
+.cookie-inner {
+  max-width: 900px; margin: 0 auto;
+  display: flex; align-items: center;
+  gap: 1.5rem; flex-wrap: wrap;
+}
+.cookie-text { flex: 1; min-width: 260px; }
+.cookie-text p { font-size: .82rem; line-height: 1.6; color: #3a4f2a; margin: 0; }
+.cookie-text a { color: var(--gm); }
+.cookie-btns { display: flex; gap: .6rem; flex-shrink: 0; flex-wrap: wrap; }
+.cookie-btn {
+  padding: 9px 18px; border-radius: 8px;
+  font-size: .82rem; font-weight: 600;
+  cursor: pointer; border: none; white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+  transition: all .15s;
+}
+.cookie-btn-all { background: var(--gd); color: #fff; }
+.cookie-btn-all:hover { background: var(--gm); }
+.cookie-btn-necessary { background: var(--gp); color: var(--gd); border: 1.5px solid #c8e6b0; }
+.cookie-btn-necessary:hover { background: var(--gl); }
+.cookie-btn-settings { background: none; color: #7a9a6a; border: 1.5px solid #e4edd9; }
+.cookie-btn-settings:hover { border-color: var(--gm); color: var(--gm); }
+
+#cookie-settings {
+  display: none; position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,.5); backdrop-filter: blur(3px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+#cookie-settings.show { display: flex; }
+.cookie-settings-box {
+  background: #fdfaf5; border-radius: 20px;
+  max-width: 520px; width: 100%; padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0,0,0,.25);
+}
+.cookie-settings-box h3 { font-family: 'Libre Baskerville', serif; font-size: 1.2rem; color: var(--gd); margin-bottom: 1.25rem; }
+.cookie-option { display: flex; align-items: center; justify-content: space-between; padding: .75rem 0; border-bottom: 1px solid #e4edd9; }
+.cookie-option:last-of-type { border-bottom: none; }
+.cookie-option-info strong { font-size: .875rem; color: #2a3a1a; display: block; }
+.cookie-option-info span { font-size: .78rem; color: #7a9a6a; }
+.cookie-toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.cookie-toggle input { opacity: 0; width: 0; height: 0; }
+.cookie-toggle-slider {
+  position: absolute; inset: 0; border-radius: 24px;
+  background: #e4edd9; cursor: pointer; transition: background .2s;
+}
+.cookie-toggle-slider::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; left: 3px; top: 3px;
+  transition: transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.cookie-toggle input:checked + .cookie-toggle-slider { background: var(--gm); }
+.cookie-toggle input:checked + .cookie-toggle-slider::before { transform: translateX(20px); }
+.cookie-toggle input:disabled + .cookie-toggle-slider { opacity: .6; cursor: not-allowed; }
+.cookie-settings-btns { display: flex; gap: .6rem; margin-top: 1.5rem; }
+.cookie-settings-btns .cookie-btn { flex: 1; text-align: center; }
+
+#cookie-revoke {
+  position: fixed; bottom: 16px; left: 16px; z-index: 400;
+  background: var(--gp); border: 1px solid #c8e6b0;
+  color: var(--gd); font-size: .72rem; font-weight: 600;
+  padding: 6px 12px; border-radius: 8px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  display: none; transition: background .15s;
+}
+#cookie-revoke:hover { background: var(--gl); }
+#cookie-revoke.show { display: block; }
 </style>
 </head>
 <body>
@@ -832,7 +982,7 @@ footer { background: var(--gd); color: rgba(255,255,255,.55); padding: 40px 8vw;
   </div>
   <div class="fbot">
     <p>© 2025 Alexander's GaLaBau · Gartenarbeit &amp; Reinigung Köln</p>
-    <div class="flegal"><a href="#" onclick="event.preventDefault();openImp()">Impressum</a><a href="#">Datenschutz</a></div>
+    <div class="flegal"><a href="/impressum">Impressum</a><a href="/datenschutz">Datenschutz</a></div>
   </div>
 </footer>
 
@@ -889,6 +1039,55 @@ function handleSubmit() {
     <p>Die auf dieser Webseite veröffentlichten Inhalte und Werke unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des jeweiligen Rechteinhabers. Downloads und Kopien dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.</p>
   </div>
 </div>
+
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner" role="dialog" aria-label="Cookie-Einstellungen">
+  <div class="cookie-inner">
+    <div class="cookie-text">
+      <p>Wir nutzen Cookies und ähnliche Technologien. Einige sind notwendig für den Betrieb der Website, andere helfen uns, die Website zu verbessern und Statistiken zu erstellen (Google Analytics). Sie können selbst entscheiden, welche Kategorien Sie zulassen möchten. Weitere Infos in unserer <a href="/datenschutz">Datenschutzerklärung</a>.</p>
+    </div>
+    <div class="cookie-btns">
+      <button class="cookie-btn cookie-btn-settings" onclick="cookieShowSettings()">Einstellungen</button>
+      <button class="cookie-btn cookie-btn-necessary" onclick="cookieNecessary()">Nur notwendige</button>
+      <button class="cookie-btn cookie-btn-all" onclick="cookieAcceptAll()">Alle akzeptieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- COOKIE EINSTELLUNGEN -->
+<div id="cookie-settings" role="dialog" aria-modal="true" aria-label="Cookie-Einstellungen Detail">
+  <div class="cookie-settings-box">
+    <h3>Cookie-Einstellungen</h3>
+    <div class="cookie-option">
+      <div class="cookie-option-info">
+        <strong>Notwendige Cookies</strong>
+        <span>Für den Betrieb der Website erforderlich</span>
+      </div>
+      <label class="cookie-toggle">
+        <input type="checkbox" checked disabled>
+        <span class="cookie-toggle-slider"></span>
+      </label>
+    </div>
+    <div class="cookie-option">
+      <div class="cookie-option-info">
+        <strong>Analyse (Google Analytics)</strong>
+        <span>Helfen uns, die Nutzung der Website zu verstehen</span>
+      </div>
+      <label class="cookie-toggle">
+        <input type="checkbox" id="toggle-analytics">
+        <span class="cookie-toggle-slider"></span>
+      </label>
+    </div>
+    <div class="cookie-settings-btns">
+      <button class="cookie-btn cookie-btn-necessary" onclick="cookieSaveSettings()">Auswahl speichern</button>
+      <button class="cookie-btn cookie-btn-all" onclick="cookieAcceptAll()">Alle akzeptieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- WIDERRUFS-BUTTON -->
+<button id="cookie-revoke" onclick="cookieRevoke()" title="Cookie-Einstellungen ändern">🍪 Cookies</button>
 
 <!-- MOBILE STICKY CTA -->
 <div class="mobile-cta" aria-label="Schnellkontakt">
