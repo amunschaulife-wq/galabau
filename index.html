@@ -704,7 +704,7 @@ footer { background: var(--gd); color: rgba(255,255,255,.55); padding: 40px 8vw;
 /* ── COOKIE BANNER ───────────────────────────────── */
 @keyframes cbSlideUp { from { opacity:0; transform:translateX(-50%) translateY(20px) } to { opacity:1; transform:translateX(-50%) translateY(0) } }
 #cb-wrap { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#1e3d0f; border-radius:16px; padding:20px 24px; max-width:640px; width:calc(100% - 32px); z-index:1000; box-shadow:0 8px 32px rgba(30,61,15,0.45); font-family:'DM Sans',sans-serif; display:flex; align-items:center; gap:20px; flex-wrap:wrap; animation:cbSlideUp 0.4s ease; }
-#cb-wrap.hidden { display:none; }
+#cb-wrap.hidden { display:none !important; }
 .cb-title { font-weight:700; font-size:14px; color:#f0f7e8; margin-bottom:4px; }
 .cb-sub { font-size:12px; color:rgba(240,247,232,0.65); line-height:1.6; }
 .cb-sub button { background:none; border:none; color:#c8e6b0; font-size:12px; cursor:pointer; font-weight:600; padding:0; text-decoration:underline; font-family:'DM Sans',sans-serif; }
@@ -1064,6 +1064,45 @@ function handleSubmit() {
   const contact = document.getElementById('kontakt').value.trim();
   if (!name || !contact) { alert('Bitte Name und Kontaktmöglichkeit ausfüllen.'); return; }
   alert('✅ Vielen Dank, ' + name + '! Ihre Anfrage ist eingegangen. Alexander meldet sich bald!');
+}
+
+// ── COOKIE CONSENT ────────────────────────────────
+var cbAnalytics = false;
+window.addEventListener('DOMContentLoaded', function() {
+  var consent = localStorage.getItem('ga-cookie-consent');
+  if (consent) { document.getElementById('cb-wrap').classList.add('hidden'); }
+  if (consent === 'all') cbLoadAnalytics();
+});
+function cbAcceptAll() {
+  localStorage.setItem('ga-cookie-consent', 'all');
+  document.getElementById('cb-wrap').classList.add('hidden');
+  cbCloseModal(); cbLoadAnalytics();
+}
+function cbAcceptNecessary() {
+  localStorage.setItem('ga-cookie-consent', 'necessary');
+  document.getElementById('cb-wrap').classList.add('hidden');
+}
+function cbSaveSelection() {
+  localStorage.setItem('ga-cookie-consent', cbAnalytics ? 'all' : 'necessary');
+  document.getElementById('cb-wrap').classList.add('hidden');
+  cbCloseModal();
+  if (cbAnalytics) cbLoadAnalytics();
+}
+function cbOpenModal() {
+  document.getElementById('cb-overlay').classList.add('show');
+  document.getElementById('cb-modal').classList.add('show');
+}
+function cbCloseModal() {
+  document.getElementById('cb-overlay').classList.remove('show');
+  document.getElementById('cb-modal').classList.remove('show');
+}
+function cbToggleAnalytics() {
+  cbAnalytics = !cbAnalytics;
+  document.getElementById('cb-toggle').classList.toggle('on', cbAnalytics);
+  document.getElementById('cb-analytics-opt').classList.toggle('active', cbAnalytics);
+}
+function cbLoadAnalytics() {
+  console.log('Analytics aktiviert');
 }
 </script>
 
