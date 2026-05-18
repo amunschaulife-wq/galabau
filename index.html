@@ -1019,6 +1019,7 @@ footer { background: var(--gd); color: rgba(255,255,255,.55); padding: 40px 8vw;
     </div>
     <div class="fg"><label for="nachricht">Nachricht (optional)</label><textarea id="nachricht" name="nachricht" placeholder="z. B. Gartengröße, gewünschter Termin…"></textarea></div>
     <button class="bsub" type="button" onclick="handleSubmit()">Anfrage absenden →</button>
+    <p id="form-msg" style="display:none;margin-top:12px;font-size:.875rem;color:#2e6b18;font-weight:600;">✅ Danke! Alexander meldet sich bald.</p>
   </div>
 </section>
 
@@ -1060,25 +1061,36 @@ function toggleFaq(btn) {
   if (!isOpen) { item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
 }
 async function handleSubmit() {
-  const name = document.getElementById('vorname').value.trim();
-  const contact = document.getElementById('kontakt').value.trim();
+  const vorname = document.getElementById('vorname').value.trim();
+  const nachname = document.getElementById('nachname') ? document.getElementById('nachname').value.trim() : '';
+  const kontakt = document.getElementById('kontakt').value.trim();
   const nachricht = document.getElementById('nachricht') ? document.getElementById('nachricht').value.trim() : '';
-  if (!name || !contact) { alert('Bitte Name und Kontaktmöglichkeit ausfüllen.'); return; }
+  const leistung = document.getElementById('leistung') ? document.getElementById('leistung').value : '';
+  if (!vorname || !kontakt) { alert('Bitte Name und Kontaktmöglichkeit ausfüllen.'); return; }
   const btn = document.querySelector('.bsub');
+  const msg = document.getElementById('form-msg');
   btn.textContent = 'Wird gesendet...';
   btn.disabled = true;
+  const data = new FormData();
+  data.append('vorname', vorname);
+  data.append('nachname', nachname);
+  data.append('kontakt', kontakt);
+  data.append('leistung', leistung);
+  data.append('nachricht', nachricht);
   try {
     const res = await fetch('https://formspree.io/f/mkoenqwq', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ name, kontakt: contact, nachricht })
+      body: data,
+      headers: { 'Accept': 'application/json' }
     });
     if (res.ok) {
-      btn.textContent = '✅ Gesendet!';
-      btn.style.background = '#4a9228';
+      btn.style.display = 'none';
+      msg.style.display = 'block';
       document.getElementById('vorname').value = '';
+      if(document.getElementById('nachname')) document.getElementById('nachname').value = '';
       document.getElementById('kontakt').value = '';
-      if (document.getElementById('nachricht')) document.getElementById('nachricht').value = '';
+      if(document.getElementById('leistung')) document.getElementById('leistung').value = '';
+      if(document.getElementById('nachricht')) document.getElementById('nachricht').value = '';
     } else {
       btn.textContent = 'Fehler – nochmal versuchen';
       btn.disabled = false;
