@@ -1059,11 +1059,34 @@ function toggleFaq(btn) {
   });
   if (!isOpen) { item.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
 }
-function handleSubmit() {
+async function handleSubmit() {
   const name = document.getElementById('vorname').value.trim();
   const contact = document.getElementById('kontakt').value.trim();
+  const nachricht = document.getElementById('nachricht') ? document.getElementById('nachricht').value.trim() : '';
   if (!name || !contact) { alert('Bitte Name und Kontaktmöglichkeit ausfüllen.'); return; }
-  alert('✅ Vielen Dank, ' + name + '! Ihre Anfrage ist eingegangen. Alexander meldet sich bald!');
+  const btn = document.querySelector('.form-submit');
+  btn.textContent = 'Wird gesendet...';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://formspree.io/f/mkoenqwq', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ name, kontakt: contact, nachricht })
+    });
+    if (res.ok) {
+      btn.textContent = '✅ Gesendet!';
+      btn.style.background = '#4a9228';
+      document.getElementById('vorname').value = '';
+      document.getElementById('kontakt').value = '';
+      if (document.getElementById('nachricht')) document.getElementById('nachricht').value = '';
+    } else {
+      btn.textContent = 'Fehler – nochmal versuchen';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    btn.textContent = 'Fehler – nochmal versuchen';
+    btn.disabled = false;
+  }
 }
 
 // ── COOKIE CONSENT ────────────────────────────────
