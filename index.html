@@ -1005,7 +1005,7 @@ footer { background: var(--gd); color: rgba(255,255,255,.55); padding: 40px 8vw;
       <div class="fg"><label for="vorname">Vorname</label><input type="text" id="vorname" name="vorname" placeholder="Max" autocomplete="given-name"></div>
       <div class="fg"><label for="nachname">Nachname</label><input type="text" id="nachname" name="nachname" placeholder="Mustermann" autocomplete="family-name"></div>
     </div>
-    <div class="fg"><label for="kontakt">Telefon oder E-Mail</label><input type="text" id="kontakt-input" name="kontakt" placeholder="0123 456789 oder name@email.de"></div>
+    <div class="fg"><label for="kontakt">Telefon oder E-Mail</label><input type="text" id="kontakt" name="kontakt" placeholder="0123 456789 oder name@email.de"></div>
     <div class="fg">
       <label for="leistung">Gewünschte Leistung</label>
       <select id="leistung" name="leistung">
@@ -1030,14 +1030,14 @@ footer { background: var(--gd); color: rgba(255,255,255,.55); padding: 40px 8vw;
       <span class="flogo">Alexander's GaLaBau</span>
       <p class="ftagline">Klein, aber mit Leidenschaft. Professionelle Gartenarbeit &amp; Reinigung in Köln.</p>
     </div>
-    <nav aria-label="Footer Navigation">
+    <div class="fnav-wrap">
       <div class="flinks">
         <a href="#leistungen">Leistungen</a>
         <a href="#preise">Preise</a>
         <a href="#faq">FAQ</a>
         <a href="#kontakt">Kontakt</a>
       </div>
-    </nav>
+    </div>
     <address style="font-style:normal;color:rgba(255,255,255,.55);font-size:.875rem;line-height:2">
       <div>📞 <a href="tel:+4915566027915" style="color:rgba(255,255,255,.55);text-decoration:none">0155 66027915</a></div>
       <div>📍 Köln &amp; Umgebung</div>
@@ -1063,7 +1063,7 @@ function toggleFaq(btn) {
 async function handleSubmit() {
   const vorname = document.getElementById('vorname').value.trim();
   const nachname = document.getElementById('nachname') ? document.getElementById('nachname').value.trim() : '';
-  const kontakt = document.getElementById('kontakt-input').value.trim();
+  const kontakt = document.getElementById('kontakt').value.trim();
   const nachricht = document.getElementById('nachricht') ? document.getElementById('nachricht').value.trim() : '';
   const leistung = document.getElementById('leistung') ? document.getElementById('leistung').value : '';
   if (!vorname || !kontakt) { alert('Bitte Name und Kontaktmöglichkeit ausfüllen.'); return; }
@@ -1088,7 +1088,7 @@ async function handleSubmit() {
       msg.style.display = 'block';
       document.getElementById('vorname').value = '';
       if(document.getElementById('nachname')) document.getElementById('nachname').value = '';
-      document.getElementById('kontakt-input').value = '';
+      document.getElementById('kontakt').value = '';
       if(document.getElementById('leistung')) document.getElementById('leistung').value = '';
       if(document.getElementById('nachricht')) document.getElementById('nachricht').value = '';
     } else {
