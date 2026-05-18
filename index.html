@@ -1064,7 +1064,7 @@ async function handleSubmit() {
   const contact = document.getElementById('kontakt').value.trim();
   const nachricht = document.getElementById('nachricht') ? document.getElementById('nachricht').value.trim() : '';
   if (!name || !contact) { alert('Bitte Name und Kontaktmöglichkeit ausfüllen.'); return; }
-  const btn = document.querySelector('.form-submit');
+  const btn = document.querySelector('.bsub');
   btn.textContent = 'Wird gesendet...';
   btn.disabled = true;
   try {
